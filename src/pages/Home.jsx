@@ -1,25 +1,19 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Campaign from "../components/Campaign";
 
 function Home() {
-  const [campaign, setCampaign] = useState(null);
+  const [campaign, setCampaign] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:5001/api/campaign")
-      .then((response) => setCampaign(response.data))
+      .get("http://localhost:5001/api/v1/campaign?limit=3")
+      .then((response) => setCampaign(response.data.campaign))
       .catch((error) => console.log(error));
   }, []);
 
-  if (!campaign) {
-    return null;
-  }
-
-  const featuredCampaign =
-    campaign.length > 3 ? campaign.slice(0, 3) : campaign;
-
-  const renderCampaigns = featuredCampaign.map((campaign) => {
+  const renderCampaigns = campaign.map((campaign) => {
     return <Campaign key={campaign._id} data={campaign} />;
   });
 
@@ -30,8 +24,10 @@ function Home() {
           <div className="hero">
             <h1>Join Us in Making a Difference</h1>
             <h2>Empower Change Through Giving</h2>
-            <button>Donate Now</button>
-            <button>Start Fundraising</button>
+            <button><Link to="/campaigns" >Donate Now </Link></button>
+            <button>
+              <Link to="/createcampaign">Start Fundraising</Link>
+            </button>
           </div>
         </div>
       </section>

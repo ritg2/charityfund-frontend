@@ -33,20 +33,23 @@ function Login() {
   const login = async (formdata) => {
     try {
       const { data } = await axios.post(
-        "http://localhost:5001/api/user/login",
+        "http://localhost:5001/api/v1/user/login",
         formdata
       );
       const { data: userData } = await axios.get(
-        "http://localhost:5001/api/user/current",
+        "http://localhost:5001/api/v1/user/current",
         {
           headers: { Authorization: `Bearer ${data.accessToken}` },
         }
       );
       setUser(userData);
       localStorage.setItem("auth", JSON.stringify(data));
+      localStorage.setItem("userInfo", JSON.stringify(userData));
       navigate("/");
     } catch (error) {
+      console.error(error);
       console.log(error.response.data.message);
+      alert(error?.response?.data?.message?? "login failed" )
     }
   };
 

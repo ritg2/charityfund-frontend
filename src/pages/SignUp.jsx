@@ -7,6 +7,7 @@ function SignUp() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    fullname: "",
     username: "",
     email: "",
     password: "",
@@ -19,8 +20,11 @@ function SignUp() {
   const validateForm = (formData) => {
     let errors = {};
 
+    if (!formData.fullname.trim()) {
+      errors.fullname = "Fullname name is required";
+    }
     if (!formData.username.trim()) {
-      errors.username = "First name is required";
+      errors.username = "username is required";
     }
     if (!formData.email.trim()) {
       errors.email = "Email is required";
@@ -52,16 +56,16 @@ function SignUp() {
   };
 
   const signUp = async (formdata) => {
-    const { username, email, password, phone } = formdata;
+    const { username, email, password, phone, fullname } = formdata;
     try {
       const { data } = await axios.post(
-        "http://localhost:5001/api/user/register",
-        { username, email, password, phone }
+        "http://localhost:5001/api/v1/user/register",
+        { username, email, password, phone, fullname }
       );
-      console.log(data);
+      
       navigate("/login");
     } catch (error) {
-      console.log(error.response.data.message);
+      console.error(error);
     }
   };
 
@@ -80,6 +84,19 @@ function SignUp() {
       <div className="form">
         <h1>Sign Up</h1>
         <form onSubmit={handleSubmit}>
+          <div>
+            <label>Fullname</label>
+            <input
+              type="text"
+              name="fullname"
+              value={formData.fullname}
+              onChange={handleInputChange}
+            />
+            {errors.fullname && (
+              <span className="errors">{errors.fullname}</span>
+            )}
+          </div>
+
           <div>
             <label>Username</label>
             <input

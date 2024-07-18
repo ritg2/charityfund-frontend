@@ -14,6 +14,14 @@ import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import { AuthContext } from "./context/AuthContext.jsx";
 import axios from "axios";
+import CreateCampaign from "./pages/CreateCampaign.jsx";
+import Campaigns from "./pages/Campaigns.jsx";
+import Profile from "./pages/Profile.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import CampaignDetails, {
+  campaignDetailsLoader,
+} from "./pages/CampaignDetails.jsx";
+import Comments, { commentsLoader } from "./pages/Comments.jsx";
 
 function App() {
   const { user, setUser } = useContext(AuthContext);
@@ -24,11 +32,14 @@ function App() {
       return;
     }
     axios
-      .get("http://localhost:5001/api/user/current", {
+      .get("http://localhost:5001/api/v1/user/current", {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
       .then((response) => setUser(response.data))
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        localStorage.clear();
+      });
   }, []);
 
   const router = createBrowserRouter(
@@ -37,6 +48,22 @@ function App() {
         <Route index element={<Home />} />
         {!user && <Route path="signup" element={<SignUp />} />}
         {!user && <Route path="login" element={<Login />} />}
+        {user && <Route path="createcampaign" element={<CreateCampaign />} />}
+        {user && <Route path="profile" element={<Profile />} />}
+        <Route path="campaigns" element={<Campaigns />} />
+        <Route
+          path="campaigndetails/:id"
+          element={<CampaignDetails />}
+          loader={campaignDetailsLoader}
+        >
+          <Route
+            path="comments"
+            element={<Comments />}
+            loader={commentsLoader}
+          />
+        </Route>
+
+        <Route path="*" element={<NotFound />} />
       </Route>
     )
   );
