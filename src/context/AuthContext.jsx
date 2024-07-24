@@ -1,23 +1,46 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
+import axiosInstance from "../utils/axiosInstance";
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const userinfo = JSON.parse(localStorage.getItem("userInfo"));
-    return userinfo ? userinfo : null;
+    try {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Failed to parse user from localStorage", error);
+      return null;
+    }
   });
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("userInfo", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("userInfo");
+  const login = async (formdata) => {
+    try {
+      const response = await axiosInstance.post("/api/v1/user/login", formdata);
+      setUser({ isLoggedIn: true });
+      localStorage.setItem("user", JSON.stringify({ isLoggedIn: true }));
+    } catch (error) {
+      setUser(null);
+      console.error(error);
+      throw error;
     }
-  }, [user]);
+  };
+
+  const logout = async () => {
+    try {
+      await axiosInstance.post("api/v1/user/logout");
+      setUser(null);
+      localStorage.clear();
+      alert("logout successfull");
+    } catch (error) {
+      console.error(error);
+      localStorage.clear();
+      throw error;
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

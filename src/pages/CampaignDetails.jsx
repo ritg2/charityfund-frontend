@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useState } from "react";
 import { Link, Outlet, useLoaderData, useParams } from "react-router-dom";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function CampaignDetails() {
   const { id } = useParams();
@@ -14,9 +14,11 @@ export default function CampaignDetails() {
     setAmount(value);
   };
 
+  const progress = (data.currentAmount / data.goalAmount) * 100;
+  const style = { width: `${progress}%` };
+
   const submitDonation = async () => {
     const { fullname, email } = JSON.parse(localStorage.getItem("userInfo"));
-    const { accessToken } = JSON.parse(localStorage.getItem("auth"));
     const paymentDetails = { amount, campaign_id: data._id };
     if (!amount.trim()) {
       alert("please add amount!");
@@ -27,12 +29,9 @@ export default function CampaignDetails() {
       return;
     }
     try {
-      const { data: response } = await axios.post(
-        "http://localhost:5001/api/v1/donation",
-        paymentDetails,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
+      const { data: response } = await axiosInstance.post(
+        `/api/v1/donation`,
+        paymentDetails
       );
       window.location.href = response.data.authorization_url;
     } catch (error) {
@@ -47,7 +46,7 @@ export default function CampaignDetails() {
   const currentPage = window.location.pathname.split("/").pop();
 
   return (
-    <div>
+    <div className="p-4 pt-24">
       {donation && (
         <div className="donation-modal">
           <form>
@@ -64,24 +63,58 @@ export default function CampaignDetails() {
           </form>
         </div>
       )}
-      <div className="campaign-details">
-        <img src={data.image.url} alt="image" />
-        <h1>{data.title}</h1>
+      <div>
+        <h1 className="text-xl font-bold md:text-3xl">{data.title}</h1>
+        <div>
+          <div>
+            <img src={data.image.url} alt="image" className="" />
+          </div>
+
+          <div className="mt-2 mb-2 bg-gray-200 rounded-full">
+            <div className="h-1 rounded-full bg-cyan" style={style}></div>
+          </div>
+          <p className="mt-2">
+            <b>₦{new Intl.NumberFormat().format(data.currentAmount)}</b> NGN
+            raised of ₦{new Intl.NumberFormat().format(data.goalAmount)} goal
+          </p>
+          <div>
+            <div className="p-2 mt-2 mb-3 text-center bg-white rounded-full cursor-pointer text-cyan hover:bg-gray-200">
+              Share
+            </div>
+            <div
+              className="p-2 mb-3 text-center bg-white rounded-full cursor-pointer text-cyan hover:bg-gray-200"
+              onClick={donate}
+            >
+              Donate now
+            </div>
+          </div>
+        </div>
       </div>
+
       <div>
         <p>{data.description}</p>
-        <button onClick={donate}>Donate</button>
       </div>
-      <div>{data.tags}</div>
+      <div className="flex flex-wrap items-center gap-4 pt-3 pb-6">
+        {data.tags.map((tag, index) => (
+          <span key={index} >
+            <Link
+              to={`../campaigns?tag=${tag}`}
+              className="p-2 mb-2 bg-gray-100 hover:bg-gray-200 rounded-xl"
+            >
+              {tag}
+            </Link>
+          </span>
+        ))}
+      </div>
       <div>
         <Link
           to={
             currentPage === "comments" ? `/campaignDetails/${id}` : "comments"
           }
         >
-          <button>
+          <div className="p-2 text-center bg-white rounded-full text-cyan hover:bg-gray-200">
             {currentPage === "comments" ? "Hide comments" : "Show comments"}
-          </button>
+          </div>
         </Link>
         <Outlet context={id} />
       </div>
@@ -91,10 +124,9 @@ export default function CampaignDetails() {
 
 export const campaignDetailsLoader = async ({ params }) => {
   const { id } = params;
-  //   const { accessToken } = JSON.parse(localStorage.getItem("auth"));
   let response;
   try {
-    response = await axios.get(`http://localhost:5001/api/v1/campaign/${id}`);
+    response = await axiosInstance.get(`/api/v1/campaign/${id}`);
   } catch (error) {
     console.error(error);
     throw new Error("Could not fetch data");

@@ -1,11 +1,17 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useState } from "react";
+import axiosInstance from "../utils/axiosInstance";
+import { validateCampaignForm } from "../utils/validateForm";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTriangleExclamation,
+  faCircleXmark,
+} from "@fortawesome/free-solid-svg-icons";
 
 function CreateCampaign() {
   const [tags, setTags] = useState([]);
 
+  const [image, setImage] = useState("");
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     title: "",
     goalAmount: "",
@@ -37,38 +43,20 @@ function CreateCampaign() {
     "ActOfKindness",
   ];
 
-  const [errors, setErrors] = useState({});
-
-  const validateForm = (formData) => {
-    let errors = {};
-    if (!formData.title.trim()) {
-      errors.title = "Title is required";
-    }
-    if (!formData.goalAmount.trim()) {
-      errors.goalAmount = "Goal Amount is required";
-    }
-    if (!formData.description.trim()) {
-      errors.description = "Description is is required";
-    }
-    if (!formData.endDate.trim()) {
-      errors.endDate = "endDate is is required";
-    }
-
-    return errors;
-  };
-
-  const createCampaign = async (formData) => {
+  const createCampaign = async (formData, image) => {
     const collectedData = { ...formData, tags: tags };
-    const { accessToken } = JSON.parse(localStorage.getItem("auth"));
     try {
-      const { data } = await axios.post(
-        "http://localhost:5001/api/v1/campaign",
-        collectedData,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
+      const { data } = await axiosInstance.post(
+        `/api/v1/campaign`,
+        collectedData
       );
-      alert("success");
+      await axiosInstance.post(`/api/v1/campaign/${data._id}/image`, image, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setImage("");
+      console.log("successfully uploaded image");
       setFormData({
         title: "",
         goalAmount: "",
@@ -76,6 +64,8 @@ function CreateCampaign() {
         endDate: "",
         tags: "",
       });
+      setTags([]);
+      alert("Campaign has been succesfully created!");
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "An error occurred");
@@ -113,81 +103,125 @@ function CreateCampaign() {
     setTags(newTags);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const errors = validateForm(formData);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const errors = validateCampaignForm(formData);
     if (Object.keys(errors).length === 0) {
-      createCampaign(formData);
+      createCampaign(formData, image);
       console.log("success");
     } else {
       setErrors(errors);
     }
   };
 
+  const handleImage = (event) => {
+    console.log(event.target.files[0]);
+    const image = new FormData();
+    image.append("image", event.target.files[0]);
+    setImage(image);
+  };
+
   return (
-    <div className="form-container">
+    <div className="flex justify-center mt-24">
       <div className="form">
-        <h1>Create Campaign</h1>
-        <form>
+        <h1 className="mb-2 text-2xl font-semibold">Create Campaign</h1>
+        <form className="w-72 sm:w-full">
           <div>
-            <label>Title</label>
+            <label className="text-sm font-semibold">Title</label>
+            <br />
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             />
-            {errors.title && <span className="errors">{errors.title}</span>}
+            {errors.title && (
+              <div className="text-sm text-red-600 ">
+                <FontAwesomeIcon icon={faTriangleExclamation} /> {errors.title}
+              </div>
+            )}
           </div>
 
           <div>
-            <label>Goal Amount</label>
+            <label className="text-sm font-semibold">Goal Amount</label>
+            <br />
             <input
               type="number"
               name="goalAmount"
               value={formData.goalAmount}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             />
             {errors.goalAmount && (
-              <span className="errors">{errors.goalAmount}</span>
+              <div className="text-sm text-red-600 ">
+                <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+                {errors.goalAmount}
+              </div>
             )}
           </div>
 
           <div>
-            <label>Description</label>
+            <label className="text-sm font-semibold">Description</label>
+            <br />
             <textarea
               type="text"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             ></textarea>
             {errors.description && (
-              <span className="errors">{errors.description}</span>
+              <div className="text-sm text-red-600 ">
+                <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+                {errors.description}
+              </div>
             )}
           </div>
 
           <div>
-            <label>End Date</label>
+            <label className="text-sm font-semibold">End Date</label>
+            <br />
             <input
               type="date"
               name="endDate"
               value={formData.endDate}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             />
-            {errors.endDate && <span className="errors">{errors.endDate}</span>}
+            {errors.endDate && (
+              <div className="text-sm text-red-600 ">
+                <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+                {errors.endDate}
+              </div>
+            )}
           </div>
 
           <div>
-            <label htmlFor="">Tags</label>
-            <div className="tags-container">
-              {tags.map((tag, index) => {
-                return (
-                  <div key={index}>
-                    {tag}
-                    <span onClick={removeTag}>x</span>
-                  </div>
-                );
-              })}
+            <label htmlFor="" className="text-sm font-semibold">
+              Tags
+            </label>
+            <br />
+            <div>
+              <div className="flex flex-wrap items-center justify-start gap-1 w-72">
+                {tags.map((tag, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="flex gap-1 px-2 py-1 my-2 mr-2 bg-gray-200 rounded-xl"
+                    >
+                      {tag}
+                      <div onClick={removeTag}>
+                        {" "}
+                        <FontAwesomeIcon
+                          icon={faCircleXmark}
+                          className="hover:cursor-pointer hover:text-white"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
               <input
                 className="tags"
                 type="text"
@@ -198,16 +232,33 @@ function CreateCampaign() {
                 onKeyDown={addTag}
                 placeholder="please add a tag"
               />
-              {errors.tags && <span className="errors">{errors.tags}</span>}
+              {errors.tags && (
+                <div className="text-sm text-red-600 ">
+                  <FontAwesomeIcon icon={faTriangleExclamation} /> {errors.tags}
+                </div>
+              )}
               <datalist id="tags">
                 {tagsSuggestion.map((tag, index) => {
                   return <option key={index} value={tag} />;
                 })}
               </datalist>
             </div>
+
+            <div>
+              <input
+                type="file"
+                name="image"
+                onChange={handleImage}
+                className="w-full mt-2"
+              />
+            </div>
           </div>
 
-          <button type="button" className="submit" onClick={handleSubmit}>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="w-full p-2 mt-4 text-center text-white rounded-lg cursor-pointer bg-cyan hover:bg-cyan-dark"
+          >
             Create Campaign
           </button>
         </form>

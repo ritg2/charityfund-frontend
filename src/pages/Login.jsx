@@ -1,57 +1,36 @@
-import axios from "axios";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { validateLoginForm } from "../utils/validateForm";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEnvelope,
+  faLock,
+  faTriangleExclamation,
+  faRightToBracket
+} from "@fortawesome/free-solid-svg-icons";
 
 function Login() {
   const navigate = useNavigate();
-  const { user, setUser } = useContext(AuthContext);
-
+  const { user, setUser, login } = useContext(AuthContext);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
-  const [errors, setErrors] = useState({});
-
-  const validateLoginForm = (formData) => {
-    let errors = {};
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Email is invalid";
-    }
-    if (!formData.password.trim()) {
-      errors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
-    }
-
-    return errors;
-  };
-
-  const login = async (formdata) => {
-    try {
-      const { data } = await axios.post(
-        "http://localhost:5001/api/v1/user/login",
-        formdata
-      );
-      const { data: userData } = await axios.get(
-        "http://localhost:5001/api/v1/user/current",
-        {
-          headers: { Authorization: `Bearer ${data.accessToken}` },
-        }
-      );
-      setUser(userData);
-      localStorage.setItem("auth", JSON.stringify(data));
-      localStorage.setItem("userInfo", JSON.stringify(userData));
-      navigate("/");
-    } catch (error) {
-      console.error(error);
-      console.log(error.response.data.message);
-      alert(error?.response?.data?.message?? "login failed" )
-    }
-  };
+  //   try {
+  //     const { data } = await axiosInstance.post("/api/v1/user/login", formdata);
+  //     const { data: userData } = await axiosInstance.get(
+  //       "/api/v1/user/current"
+  //     );
+  //     setUser(userData);
+  //     localStorage.setItem("userInfo", JSON.stringify(userData));
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error(error);
+  //     alert(error?.response?.data?.message ?? "login failed");
+  //   }
+  // };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -65,51 +44,93 @@ function Login() {
     event.preventDefault();
     const errors = validateLoginForm(formData);
     if (Object.keys(errors).length === 0) {
-      login(formData);
+      login(formData)
+        .then(() => navigate("/"))
+        .catch((error) => {
+          console.error(error);
+          alert(error?.response?.data?.message ?? "login failed");
+        });
     } else {
       setErrors(errors);
     }
   };
   return (
-    <div className="form-container">
+    <div className="flex justify-center mt-24 form-container">
       <div className="form">
-        <h1>Login</h1>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="email">Email:</label>
+        <p className="mb-4">Welcome back</p>
+        <h1 className="mb-2 text-2xl font-semibold">Sign in to CharityFund</h1>
+        <p className="mb-2">
+          Don't have an account?{" "}
+          <a href="/signup" className="underline">
+            Sign up
+          </a>
+        </p>
+        <form onSubmit={handleSubmit} className="md:w-96">
+          <div className="mb-2">
+            <label htmlFor="email" className="text-sm font-semibold">
+              Email Address
+            </label>
             <br />
-            <input
-              type="text"
-              id="email"
-              placeholder="Type your email"
-              className="email-input"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
+            <div className="relative w-full">
+              <FontAwesomeIcon
+                icon={faEnvelope}
+                className="absolute pt-3 pl-2"
+              />
+              <input
+                type="text"
+                id="email"
+                placeholder="Type your email"
+                className="w-full p-2 px-4 pl-8 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+            </div>
 
-            {errors.email && <span className="errors">{errors.email}</span>}
-          </div>
-
-          <div>
-            <label htmlFor="password">Password:</label>
-            <br />
-            <input
-              type="password"
-              id="password"
-              placeholder="Type your password"
-              className="password-input"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-            />
-            {errors.password && (
-              <span className="errors">{errors.password}</span>
+            {errors.email && (
+              <div className="text-sm text-red-600">
+                <FontAwesomeIcon icon={faTriangleExclamation} /> {errors.email}
+              </div>
             )}
           </div>
 
-          <button type="submit" className="submit">
-            Login
+          <div className="mb-2">
+            <label htmlFor="password" className="text-sm font-semibold">
+              Password
+            </label>
+            <br />
+            <div className="relative w-full">
+              <FontAwesomeIcon icon={faLock} className="absolute pt-3 pl-2" />
+              <input
+                type="password"
+                id="password"
+                placeholder="Type your password"
+                className="w-full p-2 px-4 pl-8 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+              />
+              {errors.password && (
+                <div className="text-sm text-red-600">
+                  <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+                  {errors.password}
+                </div>
+              )}
+            </div>
+          </div>
+          <div>
+            <a href="#" className="text-sm underline">
+              Forgot your password?
+            </a>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full p-2 mt-2 text-center text-white rounded-lg cursor-pointer bg-cyan hover:bg-cyan-dark"
+          >
+            <p>
+              Sign in <FontAwesomeIcon icon={faRightToBracket} />
+            </p>
           </button>
         </form>
       </div>

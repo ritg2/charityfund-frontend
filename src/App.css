@@ -1,7 +1,7 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 body {
@@ -9,291 +9,33 @@ body {
   background: #fafafa;
 }
 
-a {
-  text-decoration: none;
-  color: #ffffff;
-}
-
-nav {
-  display: flex;
-  background: transparent;
-  padding: 20px 50px;
-  justify-content: space-between;
-  position: absolute;
-  width: 100%;
-}
-
-.nav-items {
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-}
-
-.form-container {
-  padding-top: 100px;
-  padding-bottom: 20px;
-}
-
-.form {
-  padding: 30px;
-  border-radius: 10px;
-  background: #ffffff;
-  width: 500px;
-  margin: auto;
-}
-
-.form > h1 {
-  text-align: center;
-}
-
-form > div {
-  padding-top: 30px;
-}
-
-label {
-  font-size: 14px;
-}
-
-button {
-  border: none;
-  background: hsl(176, 50%, 47%);
-  margin-top: 20px;
-  padding: 10px;
-  color: #ffffff;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: hsl(176, 72%, 28%);
-}
-
-.submit {
-  width: 100%;
-}
-
-.errors {
-  color: red;
-  font-size: 12px;
-}
-
-button:active {
-  background: hsl(176, 72%, 28%);
-}
-
-input {
-  text-transform: none;
-  outline: none;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  padding: 5px;
-  width: 100%;
-}
-
-textarea {
-  width: 100%;
-  height: 100px;
-  padding: 10px;
-}
-
-.hero-wrapper {
-  background-image: url("./assets/crowdfund.jpg");
+.hero-section {
+  background-image: url("./assets/donation.jpg");
   background-repeat: no-repeat;
-  background-size: cover;
   background-position: center;
-  height: 450px;
-  text-align: center;
-  padding-top: 50px;
-  color: #ffffff;
-}
-
-.hero {
-  background-color: rgb(0, 0, 0, 0.7);
-  height: 100%;
-  width: 100%;
-  padding: 50px;
-}
-
-.hero > h1 {
-  padding-top: 30px;
-  font-size: 40px;
-}
-
-.hero > h2 {
-  padding: 30px;
-  font-size: 30px;
-}
-
-.hero button {
-  margin: 20px;
-}
-
-.campaign-image > img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 5px;
-}
-
-.testimonials,
-.campaigns {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 30px;
-  padding-bottom: 0;
-  gap: 20px;
-  width: 100%;
-}
-
-.campaign,
-.testimonial {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: left;
-  width: 300px;
+  background-size: cover;
   height: 400px;
 }
 
-.testimonial {
-  height: fit-content;
+footer {
+  margin-top: auto !important;
 }
 
-.progress-bar {
-  background: #fafafa;
-  height: 4px;
-  border-radius: 2px;
-  width: 100%;
-  margin-top: 15px;
+.spinner {
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  animation-name: spin;
 }
 
-.bar {
-  background: hsl(176, 72%, 28%);
-  height: 4px;
-  border-radius: 2px;
-}
-
-.testimonials-wrapper,
-.featured-campaigns {
-  text-align: center;
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-.description {
-  height: 60px;
-  overflow: hidden;
-}
-
-.description p {
-  text-overflow: ellipsis;
-}
-
-.campaign-details > img {
-  width: 100%;
-  height: 400px;
-  object-fit: cover;
-}
-
-/* a :active{
-  
-} */
-
-nav ul a.active {
-  background: red;
-}
-
-nav ul a,
-nav h1 a {
-  color: #ffffff;
-}
-
-/* footer {
-  position: relative;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-} */
-.footer {
-  padding: 2rem;
-  background: hsl(176, 50%, 47%);
-  color: #ffffff;
-  font-weight: 500;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.2rem;
-  margin-top: 50px;
-}
-
-.donation-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  /* bottom: 50%;
-  right: 50%; */
-  background-color: #ffffff;
-}
-
-@media (max-width: 480px) {
-  .form {
-    width: 300px;
+@keyframes spin {
+  0% {
+    rotate: 0deg;
   }
-  /* .testimonials,
-  .campaigns {
-    display: block;
-  } */
-  .testimonial,
-  .campaign {
-    margin-bottom: 30px;
+  50% {
+    rotate: 180deg;
   }
-}
-
-@media (max-width: 768px) {
-  .form {
-    width: 300px;
-  }
-  /* .testimonials,
-  .campaigns {
-    display: block;
-  } */
-  .testimonial,
-  .campaign {
-    margin-bottom: 30px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .form {
-    width: 300px;
-  }
-  /* .testimonials,
-  .campaigns {
-    display: block;
-  } */
-  .testimonial,
-  .campaign {
-    margin-bottom: 30px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .form {
-    width: 300px;
-  }
-  /* .testimonials,
-  .campaigns {
-    display: block;
-  } */
-  .testimonial,
-  .campaign {
-    margin-bottom: 30px;
+  100% {
+    rotate: 360deg;
   }
 }

@@ -1,11 +1,13 @@
-import axios from "axios";
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { useState } from "react";
+import { validateSignupForm } from "../utils/validateForm";
+import axiosInstance from "../utils/axiosInstance";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faRightToBracket,
+  faTriangleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
 
 function SignUp() {
-  const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     fullname: "",
     username: "",
@@ -14,38 +16,7 @@ function SignUp() {
     confirmPassword: "",
     phone: "",
   });
-
   const [errors, setErrors] = useState({});
-
-  const validateForm = (formData) => {
-    let errors = {};
-
-    if (!formData.fullname.trim()) {
-      errors.fullname = "Fullname name is required";
-    }
-    if (!formData.username.trim()) {
-      errors.username = "username is required";
-    }
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Email is invalid";
-    }
-    if (!formData.password.trim()) {
-      errors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
-    }
-    if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = "Passwords do not match";
-    }
-    if (!formData.phone.trim()) {
-      errors.phone = "Phone number is required";
-    } else if (formData.phone.length < 11) {
-      errors.phone = "Phone must be 11 characters long";
-    }
-    return errors;
-  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -58,20 +29,31 @@ function SignUp() {
   const signUp = async (formdata) => {
     const { username, email, password, phone, fullname } = formdata;
     try {
-      const { data } = await axios.post(
-        "http://localhost:5001/api/v1/user/register",
-        { username, email, password, phone, fullname }
-      );
-      
-      navigate("/login");
+      await axiosInstance.post("/api/v1/user/register", {
+        username,
+        email,
+        password,
+        phone,
+        fullname,
+      });
+      setFormData({
+        fullname: "",
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phone: "",
+      });
+      alert("SignUp successfull check email for verification");
     } catch (error) {
       console.error(error);
+      alert("SignUp failed");
     }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const errors = validateForm(formData);
+    const errors = validateSignupForm(formData);
     if (Object.keys(errors).length === 0) {
       signUp(formData);
     } else {
@@ -80,86 +62,131 @@ function SignUp() {
   };
 
   return (
-    <div className="form-container">
+    <div className="flex justify-center mt-24">
       <div className="form">
-        <h1>Sign Up</h1>
-        <form onSubmit={handleSubmit}>
+        <p className="mb-4">Welcome to CharityFund</p>
+        <h1 className="mb-2 text-2xl font-semibold">Create an account</h1>
+        <p className="mb-2">
+          Already have an account?{" "}
+          <a href="/login" className="underline">
+            Sign in
+          </a>
+        </p>
+        <form onSubmit={handleSubmit} className="md:w-96">
           <div>
-            <label>Fullname</label>
+            <label className="text-sm font-semibold">Fullname</label>
+            <br />
             <input
               type="text"
               name="fullname"
               value={formData.fullname}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             />
             {errors.fullname && (
-              <span className="errors">{errors.fullname}</span>
+              <div className="text-sm text-red-600 ">
+                <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+                {errors.fullname}
+              </div>
             )}
           </div>
 
           <div>
-            <label>Username</label>
+            <label className="text-sm font-semibold">Username</label>
+            <br />
             <input
               type="text"
               name="username"
               value={formData.username}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             />
             {errors.username && (
-              <span className="errors">{errors.username}</span>
+              <div className="text-sm text-red-600 ">
+                <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+                {errors.username}
+              </div>
             )}
           </div>
 
           <div>
-            <label>Email</label>
+            <label className="text-sm font-semibold">Email</label>
+            <br />
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             />
-            {errors.email && <span className="errors">{errors.email}</span>}
+            {errors.email && (
+              <div className="text-sm text-red-600 ">
+                <FontAwesomeIcon icon={faTriangleExclamation} /> {errors.email}
+              </div>
+            )}
           </div>
 
           <div>
-            <label>Password</label>
+            <label className="text-sm font-semibold">Password</label>
+            <br />
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             />
             {errors.password && (
-              <span className="errors">{errors.password}</span>
+              <div className="text-sm text-red-600 ">
+                <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+                {errors.password}
+              </div>
             )}
           </div>
 
           <div>
-            <label>Confirm password</label>
+            <label className="text-sm font-semibold">Confirm password</label>
+            <br />
             <input
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             />
             {errors.confirmPassword && (
-              <span className="errors">{errors.confirmPassword}</span>
+              <div className="text-sm text-red-600 ">
+                <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+                {errors.confirmPassword}
+              </div>
             )}
           </div>
 
           <div>
-            <label>Phone</label>
+            <label className="text-sm font-semibold">Phone</label>
+            <br />
             <input
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
+              className="w-full p-2 px-4 border border-solid rounded-lg focus:outline-none border-cyan-dark hover:bg-gray-100"
             />
-            {errors.phone && <span className="errors">{errors.phone}</span>}
+            {errors.phone && (
+              <div className="text-sm text-red-600 ">
+                {" "}
+                <FontAwesomeIcon icon={faTriangleExclamation} /> {errors.phone}
+              </div>
+            )}
           </div>
 
-          <button type="submit" className="submit">
-            Sign Up
+          <button
+            type="submit"
+            className="w-full p-2 mt-4 text-center text-white rounded-lg cursor-pointer bg-cyan hover:bg-cyan-dark"
+          >
+            <p>
+              Sign up <FontAwesomeIcon icon={faRightToBracket} />
+            </p>
           </button>
         </form>
       </div>
