@@ -68,7 +68,7 @@ function Campaigns() {
             <FontAwesomeIcon icon={faBackwardStep} /> Previous
           </Link>
         )}
-        {campaigns.numOfpages > 1 && (
+        {campaigns.numOfpages > campaigns.currentPage && (
           <Link
             to={`/campaigns?page=${campaigns.currentPage + 1}`}
             className="p-2 text-white rounded-lg bg-cyan hover:bg-cyan-dark"

@@ -6,8 +6,8 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
 function Comments() {
   const id = useOutletContext();
-  const data = useLoaderData();
-  const [comments, setComments] = useState(data.data);
+  const {data:comments} = useLoaderData();
+  // const [comments, setComments] = useState(data.data);
 
   const loadMoreComments = useCallback(async () => {
     try {
