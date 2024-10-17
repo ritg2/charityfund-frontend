@@ -13,7 +13,7 @@ import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import { AuthContextProvider } from "./context/AuthContext.jsx";
 import CreateCampaign from "./pages/CreateCampaign.jsx";
-import Campaigns from "./pages/Campaigns.jsx";
+import Search from "./pages/Search.jsx";
 import Profile, { profileLoader } from "./pages/Profile.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import CampaignDetails, {
@@ -21,6 +21,8 @@ import CampaignDetails, {
 } from "./pages/CampaignDetails.jsx";
 import Comments, { commentsAction, commentsLoader } from "./pages/Comments.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
+import CreateNgo from "./pages/CreateNgo.jsx";
+import Dashboard, { dashboardLoader } from "./pages/Dashboard.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,9 +30,19 @@ const router = createBrowserRouter(
       <Route index element={<Home />} errorElement={<ErrorPage />} />
       <Route path="signup" element={<SignUp />} />
       <Route path="login" element={<Login />} />
+      <Route path="createngo" element={<CreateNgo />} />
       <Route path="createcampaign" element={<CreateCampaign />} />
-      <Route path="profile/:profileId" element={<Profile />} loader={profileLoader} />
-      <Route path="campaigns" element={<Campaigns />} />
+      <Route
+        path="dashboard"
+        element={<Dashboard />}
+        loader={dashboardLoader}
+      />
+      <Route
+        path="profile/:profileId"
+        element={<Profile />}
+        loader={profileLoader}
+      />
+      <Route path="search" element={<Search />} />
       <Route
         path="campaigndetails/:id"
         element={<CampaignDetails />}

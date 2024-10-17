@@ -7,7 +7,7 @@ export const validateLoginForm = (formData) => {
   }
   if (!formData.password.trim()) {
     errors.password = "Password is required";
-  } else if (formData.password.length < 6) {
+  } else if (formData.password.length < 5) {
     errors.password = "Password must be at least 6 characters";
   }
 
@@ -41,6 +41,9 @@ export const validateSignupForm = (formData) => {
   } else if (formData.phone.length < 11) {
     errors.phone = "Phone must be 11 characters long";
   }
+  if (!formData.role.trim()) {
+    errors.role = "role is required";
+  }
   return errors;
 };
 
@@ -59,5 +62,16 @@ export const validateCampaignForm = (formData) => {
     errors.endDate = "endDate is is required";
   }
 
+  return errors;
+};
+
+export const validateOrganizationForm = (formData) => {
+  let errors = {};
+  if (!formData.organizationName.trim()) {
+    errors.organizationName = "Organization name is required";
+  }
+  if (!formData.missionStatement.trim()) {
+    errors.missionStatement = "Mission statement is required";
+  }
   return errors;
 };

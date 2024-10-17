@@ -27,12 +27,12 @@ function Comments() {
 
   const listComments = comments.comments.map((comment) => {
     return (
-      <div key={comment._id} className="flex gap-2">
+      <div key={comment._id} className="flex gap-2 mt-2">
         <img
           className="h-6 mt-1 rounded-full"
           src={comment.userDetails.profile_picture.url}
         ></img>
-        <div>
+        <div className="w-full px-2 py-1 bg-white rounded-md dark:text-white dark:bg-dark-black">
           <p><b>{comment.userDetails.username}</b></p>
           <p>{comment.content}</p>
         </div>
@@ -43,7 +43,7 @@ function Comments() {
   return (
     <div>
       <div className="pt-4">
-        <Form method="post" className="flex gap-2">
+        <Form method="post" className="flex gap-2 dark:text-white" >
           <img
             src="https://res.cloudinary.com/dzr31apfk/image/upload/PngItem_307416_yy94m5.png"
             alt=""
@@ -52,7 +52,7 @@ function Comments() {
           <textarea
             name="comment"
             placeholder="Add a comment"
-            className="w-full px-2 rounded-sm max-h-12"
+            className="w-full px-2 border rounded-sm max-h-12 dark:bg-dark-cyan-dark border-cyan"
           />
           <button type="submit" className="self-end">
             <FontAwesomeIcon
@@ -66,7 +66,7 @@ function Comments() {
           listComments
         ) : (
           <div>
-            <p>No comments</p>
+            <p className="dark:text-white">No comments</p>
           </div>
         )}
         {comments.currentPage < comments.totalPages && (
@@ -106,7 +106,6 @@ export const commentsAction = async ({ params, request }) => {
       `/api/v1/comment/${params.id}/comments`,
       { content: comment }
     );
-    console.log(data);
   } catch (error) {
     console.error(error);
     alert(error?.response?.data?.message ?? "unable to post comment");

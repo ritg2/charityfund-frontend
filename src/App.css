@@ -9,12 +9,16 @@ body {
   background: #fafafa;
 }
 
+.darkMode {
+  background: #1d2a35;
+}
+
 .hero-section {
-  background-image: url("./assets/donation.jpg");
+  background-image: url("./assets/hero-background.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  height: 400px;
+  background-attachment: fixed;
 }
 
 footer {

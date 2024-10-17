@@ -1,41 +1,75 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faThumbsUp,
+  faThumbsDown,
+  faComment,
+  faBookmark,
+  faShare,
+} from "@fortawesome/free-solid-svg-icons";
 
 function Campaign(props) {
   const {
     title,
     currentAmount,
     goalAmount,
-    image,
+    image: { url },
     _id: id,
   } = props.data;
+  const navigate = useNavigate();
   const progress = (currentAmount / goalAmount) * 100;
   const style = { width: `${progress}%` };
 
   return (
-    <div className="flex items-center justify-center gap-2 p-2 m-3 rounded-lg lg:w-72 md:w-60 md:block hover:bg-gray-100">
-      <div className="bg-black ">
+    <div
+      onClick={() => navigate(`/campaigndetails/${id}`)}
+      className="block p-2 m-3 bg-white rounded-lg shadow-md hover:bg-gray-100 w-fit dark:bg-dark-black"
+    >
+      <div className="w-fit">
         <img
-          src={image.url}
+          src={url}
           alt="No image"
-          className="object-cover w-36 h-28 md:h-80 md:w-full"
+          className="object-cover  w-[250px] h-[150px] rounded-lg"
         />
       </div>
       <div className="flex flex-col justify-between w-full gap-2">
-        <p className="title">
+        <p className="dark:text-white">
           <b> {title}</b>
         </p>
-        <div className="bg-gray-200">
-          <div className="h-1 rounded-full bg-cyan" style={style}></div>
+        <div className="bg-gray-200 rounded-full">
+          <div className="h-1 rounded-full bg-cyan " style={style}></div>
         </div>
-        <p className="">
+        <p className="dark:text-white">
           <b>₦{new Intl.NumberFormat().format(currentAmount)} raised</b>
         </p>
-        <Link
+        {/* <Link
           to={`/campaigndetails/${id}`}
-          className="p-2 pt-2 bg-white rounded-full text-cyan hover:bg-gray-200 w-fit"
+          className="p-2 text-center text-white rounded-full bg-cyan hover:bg-white hover:text-cyan"
         >
           Donate Now
-        </Link>
+        </Link> */}
+        <div className="flex items-center justify-between">
+          <div>
+            <button className="dark:text-white">
+              <FontAwesomeIcon icon={faThumbsUp} />
+              <span>20</span>
+            </button>
+            <button className="dark:text-white">
+              <FontAwesomeIcon icon={faThumbsDown} />
+              <span>0</span>
+            </button>
+          </div>
+          <button className="dark:text-white">
+            <FontAwesomeIcon icon={faComment} />
+            <span>10</span>
+          </button>
+          <button className="dark:text-white">
+            <FontAwesomeIcon icon={faBookmark} />
+          </button>
+          <button className="dark:text-white">
+            <FontAwesomeIcon icon={faShare} />
+          </button>
+        </div>
       </div>
     </div>
   );

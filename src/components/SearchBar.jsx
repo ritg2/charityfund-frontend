@@ -14,16 +14,18 @@ export default function SearchBar() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const search = searchQuery;
-    setSearchQuery("");
-    navigate(`/campaigns?search=${search}`);
+    navigate(`/search?search=${search}`);
   };
 
   return (
     <div className="flex justify-center my-3">
       <form onSubmit={handleSubmit} className="relative w-full md:w-96">
-      <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute pt-3 pl-3"/>
+        <FontAwesomeIcon
+          icon={faMagnifyingGlass}
+          className="absolute pt-3 pl-3 dark:text-white"
+        />
         <input
-          className="w-full p-2 pl-10 rounded-full"
+          className="w-full p-2 pl-10 border border-solid rounded-full focus:outline-none border-cyan-dark hover:bg-gray-100 dark:text-white dark:bg-dark-cyan-dark"
           type="search"
           placeholder="search"
           onChange={handleSearch}

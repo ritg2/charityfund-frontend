@@ -17,8 +17,9 @@ export const AuthContextProvider = ({ children }) => {
   const login = async (formdata) => {
     try {
       const response = await axiosInstance.post("/api/v1/user/login", formdata);
-      setUser({ isLoggedIn: true });
-      localStorage.setItem("user", JSON.stringify({ isLoggedIn: true }));
+      console.log(response);
+      setUser(response.data.user);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
     } catch (error) {
       setUser(null);
       console.error(error);

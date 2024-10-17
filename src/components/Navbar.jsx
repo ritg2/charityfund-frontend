@@ -2,9 +2,23 @@ import { useContext, useState, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass, faBurger, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMagnifyingGlass,
+  faHouse,
+  faAddressCard,
+  faAddressBook,
+  faRightToBracket,
+  faUserPlus,
+  faCirclePlus,
+  faUser,
+  faTableColumns,
+  faSun,
+  faMoon,
+  faBurger,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 
-function Navbar() {
+function Navbar({ toggleTheme, theme }) {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -13,123 +27,158 @@ function Navbar() {
     setOpen(!open);
   };
 
-  // Handler to close the dropdown if clicked outside
-  const handleClickOutside = (event) => {
-    if (event.target.closest('.dropdown') === null && !event.target.closest('#a')) {
-      setOpen(false);
-    }
-  };
-
-  // Use effect to add and clean up global event listener
   useEffect(() => {
-    window.addEventListener('click', handleClickOutside);
+    const closeDropdown = (e) => {
+      if (!e.target || typeof e.target.className !== "string") return;
+      if (!e.target.className.includes("dropdown")) setOpen(false);
+    };
+
+    if (open) {
+      window.addEventListener("click", closeDropdown);
+    }
 
     return () => {
-      window.removeEventListener('click', handleClickOutside);
+      window.removeEventListener("click", closeDropdown);
     };
-  }, []);
+  }, [open]);
 
   return (
-    <header className="absolute top-0 bottom-0 left-0 right-0 w-full h-5 p-2 px-6 mx-auto">
-      <nav className="flex items-center justify-between px-2 bg-white rounded-full">
-        <div>
-          <NavLink to="/campaigns" className="px-3 py-2 rounded-xl hover:bg-gray-200">
-            <FontAwesomeIcon icon={faMagnifyingGlass} />
+    <header>
+      <div className="flex items-center justify-center w-full px-2 bg-white shadow-sm dark:bg-dark-cyan-dark">
+        <nav className="container relative flex items-center justify-between w-full">
+          {/* Logo */}
+          <NavLink to="/" className="px-2 py-2 text-xl font-bold text-cyan">
+            charityfund
           </NavLink>
-        </div>
 
-        <NavLink to="/" className="px-2 py-2 text-xl font-bold text-cyan">
-          charityfund
-        </NavLink>
+          {/* Nav Items */}
+          <div
+            className={`items-center justify-between dark:bg-dark-cyan-dark gap-2 lg:flex bg-white  lg:relative  ${
+              !open
+                ? "hidden"
+                : "flex flex-col p-2 absolute right-0 top-[40px] rounded-lg shadow-sm z-50"
+            }`}
+          >
+            <NavLink
+              to="/"
+              className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 lg:w-fit rounded-xl hover:text-cyan dark:text-white dark:hover:text-cyan"
+            >
+              <FontAwesomeIcon icon={faHouse} />
+              <span>Home</span>
+            </NavLink>
+            <NavLink
+              to="/"
+              className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
+            >
+              <FontAwesomeIcon icon={faAddressCard} />
+              <span>About Us</span>
+            </NavLink>
 
-        <div className="flex items-center justify-between gap-2">
-          <div className="relative">
-            <div>
-              {!open ? (
-                <FontAwesomeIcon
-                  onClick={toggleDropdown}
-                  icon={faBurger}
-                  id="a"
-                  className="z-10 px-3 py-2 cursor-pointer rounded-xl hover:bg-gray-200 lg:hidden dropdown"
-                />
-              ) : (
-                <FontAwesomeIcon
-                  icon={faXmark}
-                  className="z-10 px-3 py-2 cursor-pointer rounded-xl hover:bg-gray-200 lg:hidden dropdown"
-                  onClick={() => setOpen(false)}
-                />
-              )}
-            </div>
-            {open && (
-              <div className="absolute z-30 flex flex-col p-2 bg-white rounded-lg right-2 lg:hidden w-fit">
-                {!user && (
-                  <NavLink to="/signup" className="px-3 py-2 rounded- hover:bg-gray-200">
-                    Sign up
-                  </NavLink>
-                )}
-                {!user && (
-                  <NavLink to="/login" className="px-3 py-2 rounded-xl hover:bg-gray-200">
-                    Login
-                  </NavLink>
-                )}
-                {user && (
-                  <NavLink to="/createcampaign" className="px-3 py-2 rounded-xl hover:bg-gray-200">
-                    Create
-                  </NavLink>
-                )}
-                {user && (
-                  <NavLink to="/profile" className="px-3 py-2 rounded-xl hover:bg-gray-200">
-                    Profile
-                  </NavLink>
-                )}
-                {user && (
-                  <Link
-                    to="/"
-                    className="px-3 py-2 rounded-xl hover:bg-gray-200"
-                    onClick={() => {
-                      logout()
-                        .then(() => navigate("/login"))
-                        .catch(console.error);
-                    }}
+            <NavLink
+              to="/search"
+              className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
+            >
+              <FontAwesomeIcon icon={faMagnifyingGlass} />
+              <span>Search</span>
+            </NavLink>
+
+            <NavLink
+              to="/"
+              className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
+            >
+              <FontAwesomeIcon icon={faAddressBook} />
+              <span>Contact</span>
+            </NavLink>
+
+            {/*Nav Items if user is logged in */}
+            {!user ? (
+              <>
+                <NavLink
+                  to="/login"
+                  className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
+                >
+                  <FontAwesomeIcon icon={faRightToBracket} />
+                  <span>Login</span>
+                </NavLink>
+
+                <NavLink
+                  to="/signup"
+                  className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
+                >
+                  <FontAwesomeIcon icon={faUserPlus} />
+                  <span>Sign Up</span>
+                </NavLink>
+              </>
+            ) : (
+              <>
+                {user.role === "ngo" && (
+                  <NavLink
+                    to="/createcampaign"
+                    className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
                   >
-                    Logout
-                  </Link>
+                    <FontAwesomeIcon icon={faCirclePlus} />
+                    <span>Create</span>
+                  </NavLink>
                 )}
-              </div>
+                <NavLink
+                  to={`/profile/${user._id}`}
+                  className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
+                >
+                  <FontAwesomeIcon icon={faUser} />
+                  <span>Profile</span>
+                </NavLink>
+                {user.role === "admin" && (
+                  <NavLink
+                    to="/dashboard"
+                    className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
+                  >
+                    <FontAwesomeIcon icon={faTableColumns} />
+                    <span>Dashboard</span>
+                  </NavLink>
+                )}
+                <button
+                  onClick={() => {
+                    logout().then(() => navigate("/"));
+                  }}
+                  className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
+                >
+                  <FontAwesomeIcon icon={faRightToBracket} />
+                  <span>Logout</span>
+                </button>
+              </>
+            )}
+            <button
+              onClick={toggleTheme}
+              className="flex flex-row items-center justify-start w-full gap-1 px-1 py-2 rounded-xl hover:text-cyan dark:hover:text-cyan dark:text-white lg:w-fit"
+            >
+              {theme === "light" ? (
+                <>
+                  <FontAwesomeIcon icon={faSun} />
+                  <span>Light</span>
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faMoon} />
+                  <span>Dark</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Hamburger menu*/}
+
+          <div
+            className="h-[30px] w-[30px] rounded-full hover:text-cyan dark:hover:text-cyan dark:text-white lg:hidden flex justify-center items-center dropdown"
+            onClick={toggleDropdown}
+          >
+            {!open ? (
+              <FontAwesomeIcon icon={faBurger} />
+            ) : (
+              <FontAwesomeIcon icon={faXmark} />
             )}
           </div>
-          {!user ? (
-            <>
-              <NavLink to="/signup" className="hidden px-3 py-2 rounded-xl hover:bg-gray-200 lg:block">
-                Sign up
-              </NavLink>
-              <NavLink to="/login" className="hidden px-3 py-2 rounded-xl hover:bg-gray-200 lg:block">
-                Login
-              </NavLink>
-            </>
-          ) : (
-            <>
-              <NavLink to="/createcampaign" className="hidden px-3 py-2 rounded-xl hover:bg-gray-200 lg:block">
-                Create Campaign
-              </NavLink>
-              <NavLink to="/profile" className="hidden px-3 py-2 rounded-xl hover:bg-gray-200 lg:block">
-                Profile
-              </NavLink>
-              <Link
-                to="/"
-                className="hidden px-3 py-2 rounded-xl hover:bg-gray-200 lg:block"
-                onClick={() => {
-                  logout()
-                    .then(() => navigate("/login"))
-                    .catch(console.error);
-                }}
-              >
-                Logout
-              </Link>
-            </>
-          )}
-        </div>
-      </nav>
+        </nav>
+      </div>
     </header>
   );
 }
